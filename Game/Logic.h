@@ -19,9 +19,22 @@ class Logic
         optimization = (*config)("Bot", "Optimization");
     }
 
-    vector<move_pos> find_best_turns(const bool color)
+    vector<move_pos> find_best_turns(const bool color) // метод для нахождения лучших ходов для указанного цвета
     {
-        return new vector<move_pos>;
+        next_move.clear(); // очистка информации о старых "следующих ходах" и "состояниях"
+        next_best_state.clear();
+
+        find_first_best_turn(board->get_board(), color, -1, -1, 0); // поиск первого лучшего хода
+
+        vector<move_pos> best_moves; // вектор для хранения найденных лучших ходов
+        int state = 0; // состояние, с которого начинается поиск
+        
+        while (state != -1 && next_move[state].x != -1) { // пока есть доступные ходы
+            best_moves.push_back(next_move[state]); // добавление лучшего хода в вектр
+            state = next_best_state[state]; // переход к слежуающему лучшему ходу
+        }
+
+        return best_moves; // в результате отдается вектор с лучшими ходами
     }
 
 private:
@@ -73,15 +86,97 @@ private:
     }
 
     double find_first_best_turn(vector<vector<POS_T>> mtx, const bool color, const POS_T x, const POS_T y, size_t state,
-                                double alpha = -1)
+                                double alpha = -1) // рекурсивный метод для поиска первого лучшего хода в заданной позиции
     {
-        return 0.0;
+        next_move.emplace_back(-1, -1, -1, -1); // инициализация нового хода 
+        next_best_state.push_back(-1);
+        
+        if (state != 0) { // поиск возможных ходов
+            find_turns(x, y, mtx);
+        }
+        
+        auto now_turns = turns; // возможные лучшие ходы в настоящий момент
+        auto can_beats = have_beats; // можно ли "съесть" шашку
+
+        if (!can_beats && state != 0) { // если нет возможности съесть, то ищем лучшие ходы для другого цвета
+            return find_best_turns_rec(mtx, 1 - color, 0, alpha);
+        }
+
+        double best_score = -1; // инициализация лучшего счёта
+        
+        for (auto turn : now_turns) {
+            size_t new_state = next_move.size(); // следующеe состояниe
+            double current_score;
+            if (can_beats) { // если можно съесть шашку
+                current_score = find_first_best_turn(make_turn(mtx, turn), color, turn.x2, turn.y2, new_state, best_score); // рекурсивный вызов поиска следующего лучшего хода
+            } else {
+                current_score = find_best_turns_rec(make_turn(mtx, turn), 1 - color, 0, best_score); // иначе ищем лучшие ходы для другого цвета
+            }
+
+            if (current_score > best_score) {
+                best_score = current_score; // обновление лучшего счёта
+                next_move[state] = turn; // сохранение текущего лушего хода состояния
+                next_best_state[state] = (can_beats ? new_state : -1); // определение следующего состояния
+            }
+        }
+        return best_score;
     }
 
     double find_best_turns_rec(vector<vector<POS_T>> mtx, const bool color, const size_t depth, double alpha = -1,
-                               double beta = INF + 1, const POS_T x = -1, const POS_T y = -1)
+                               double beta = INF + 1, const POS_T x = -1, const POS_T y = -1) // рекурсивный метод для поиска лучших ходов с учётом текущего состояния и глубины поиска
     {
-        return 0.0;
+            if (depth == Max_depth) { // если достигнут лимит по глубине
+                return calc_score(mtx, (depth % 1 == color)); // оценка позиции для текузего хода
+            }
+
+            if (x != -1) { // если есть координаты, то ищем лучший ход для шашки данного цвета по этим координатам
+                find_turns(x, y, mtx);
+            } else { // иначе для всех текущего цвета
+                find_turns(color, mtx);
+            }
+            
+            auto now_turns = turns; // текущие лучшие ходы
+            auto can_beats = have_beats; // есть ли возможность "съесть" шашку
+            
+            if (!can_beats && x != -1) { // если нет возможности съесть шашку, то рекурсивно ищем лучшие ходы другого цвета
+                return find_best_turns_rec(mtx, 1 - color, +1, alpha, beta);
+            }
+
+            if (turns.empty()) { // если ходов нет, то возвращается 0 для своего цвета, INF для противника
+                return (depth % 2 ? 0 : INF);
+            }
+
+            double min_score = INF + 1; // минимальный счет
+            double max_score = -1; // максимальный счет
+            
+            for (auto turn : now_turns) {
+                double score;
+                
+                if (can_beats) { // если можно съесть, то ищем дальнейшие лучшие ходы
+                    score = find_best_turns_rec(make_turn(mtx, turn), color, depth, alpha, beta, turn.x2, turn.y2);
+                } else { // иначе ищем лучшие ходы другого цвета
+                    score = find_best_turns_rec(make_turn(mtx, turn), 1 - color, depth + 1, alpha, beta);
+                }
+
+                min_score = min(min_score, score); // обновление минимального цвета
+                max_score = max(max_score, score); // обновление максимального цвета
+                
+                if (depth % 2) { // alpha-beta отсечение
+                    alpha = max(alpha, max_score); // если игрок максимизирует счет
+                } else {
+                    beta = min(beta, min_score); // если игрок минимизирует счет
+                }
+                
+                if (optimization != "O0" && alpha > beta) { // если alpha > beta, то выход из цикла
+                    break;
+                }
+                
+                if (optimization == "O2" && alpha == beta) { // проверка оптимизации
+                    return (depth % 2 ? max_score + 1 : min_score - 1);
+                }
+            }
+
+            return (depth % 2 ? max_score : min_score); // возвращение лучшего счета в зависимости от цвета
     }
 
 public:
