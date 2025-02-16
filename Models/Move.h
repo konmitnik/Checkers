@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <stdlib.h>
 
 typedef int8_t POS_T;
@@ -9,20 +9,20 @@ struct move_pos
     POS_T x2, y2;           // to
     POS_T xb = -1, yb = -1; // beaten
 
-    move_pos(const POS_T x, const POS_T y, const POS_T x2, const POS_T y2) : x(x), y(y), x2(x2), y2(y2) // конструктор
+    move_pos(const POS_T x, const POS_T y, const POS_T x2, const POS_T y2) : x(x), y(y), x2(x2), y2(y2) // РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
     {
     }
-    move_pos(const POS_T x, const POS_T y, const POS_T x2, const POS_T y2, const POS_T xb, const POS_T yb) // перегрузка конструктора
+    move_pos(const POS_T x, const POS_T y, const POS_T x2, const POS_T y2, const POS_T xb, const POS_T yb) // РїРµСЂРµРіСЂСѓР·РєР° РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР°
         : x(x), y(y), x2(x2), y2(y2), xb(xb), yb(yb)
     {
     }
 
-    bool operator==(const move_pos &other) const // перегрузка оператора сравнения "равно"
+    bool operator==(const move_pos& other) const // РїРµСЂРµРіСЂСѓР·РєР° РѕРїРµСЂР°С‚РѕСЂР° СЃСЂР°РІРЅРµРЅРёСЏ "СЂР°РІРЅРѕ"
     {
-        return (x == other.x && y == other.y && x2 == other.x2 && y2 == other.y2); // проверка что все координаты (и "от", и "куда") совпадают
+        return (x == other.x && y == other.y && x2 == other.x2 && y2 == other.y2); // РїСЂРѕРІРµСЂРєР° С‡С‚Рѕ РІСЃРµ РєРѕРѕСЂРґРёРЅР°С‚С‹ (Рё "РѕС‚", Рё "РєСѓРґР°") СЃРѕРІРїР°РґР°СЋС‚
     }
-    bool operator!=(const move_pos &other) const // перегрузка оператора сравнения "не равно"
+    bool operator!=(const move_pos& other) const // РїРµСЂРµРіСЂСѓР·РєР° РѕРїРµСЂР°С‚РѕСЂР° СЃСЂР°РІРЅРµРЅРёСЏ "РЅРµ СЂР°РІРЅРѕ"
     {
-        return !(*this == other); // проверка, что ссылаемся не на тот же объект, с которым сравниваем
+        return !(*this == other); // РїСЂРѕРІРµСЂРєР°, С‡С‚Рѕ СЃСЃС‹Р»Р°РµРјСЃСЏ РЅРµ РЅР° С‚РѕС‚ Р¶Рµ РѕР±СЉРµРєС‚, СЃ РєРѕС‚РѕСЂС‹Рј СЃСЂР°РІРЅРёРІР°РµРј
     }
 };

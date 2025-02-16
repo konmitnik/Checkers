@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <tuple>
 
 #include "../Models/Move.h"
@@ -8,11 +8,11 @@
 // methods for hands
 class Hand
 {
-  public:
-    Hand(Board *board) : board(board) // конструктор
+public:
+    Hand(Board* board) : board(board) // РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
     {
     }
-    tuple<Response, POS_T, POS_T> get_cell() const // функция получения координат клетки от игрока
+    tuple<Response, POS_T, POS_T> get_cell() const // С„СѓРЅРєС†РёСЏ РїРѕР»СѓС‡РµРЅРёСЏ РєРѕРѕСЂРґРёРЅР°С‚ РєР»РµС‚РєРё РѕС‚ РёРіСЂРѕРєР°
     {
         SDL_Event windowEvent;
         Response resp = Response::OK;
@@ -22,49 +22,49 @@ class Hand
         {
             if (SDL_PollEvent(&windowEvent))
             {
-                switch (windowEvent.type) // проверка типа ввода игрока
+                switch (windowEvent.type) // РїСЂРѕРІРµСЂРєР° С‚РёРїР° РІРІРѕРґР° РёРіСЂРѕРєР°
                 {
-                case SDL_QUIT: // если выход, то возвращаем соотетствующий ответ
+                case SDL_QUIT: // РµСЃР»Рё РІС‹С…РѕРґ, С‚Рѕ РІРѕР·РІСЂР°С‰Р°РµРј СЃРѕРѕС‚РµС‚СЃС‚РІСѓСЋС‰РёР№ РѕС‚РІРµС‚
                     resp = Response::QUIT;
                     break;
-                case SDL_MOUSEBUTTONDOWN: // если нажата кнопка мышь
-                    x = windowEvent.motion.x; // получение координат, где нажали на кнопку мыши
+                case SDL_MOUSEBUTTONDOWN: // РµСЃР»Рё РЅР°Р¶Р°С‚Р° РєРЅРѕРїРєР° РјС‹С€СЊ
+                    x = windowEvent.motion.x; // РїРѕР»СѓС‡РµРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚, РіРґРµ РЅР°Р¶Р°Р»Рё РЅР° РєРЅРѕРїРєСѓ РјС‹С€Рё
                     y = windowEvent.motion.y;
-                    xc = int(y / (board->H / 10) - 1); // расчет координат клетки
+                    xc = int(y / (board->H / 10) - 1); // СЂР°СЃС‡РµС‚ РєРѕРѕСЂРґРёРЅР°С‚ РєР»РµС‚РєРё
                     yc = int(x / (board->W / 10) - 1);
-                    if (xc == -1 && yc == -1 && board->history_mtx.size() > 1) // если нажата кнопка "Назад"
+                    if (xc == -1 && yc == -1 && board->history_mtx.size() > 1) // РµСЃР»Рё РЅР°Р¶Р°С‚Р° РєРЅРѕРїРєР° "РќР°Р·Р°Рґ"
                     {
                         resp = Response::BACK;
                     }
-                    else if (xc == -1 && yc == 8) // если нажата кнопка "Перезапуск"
+                    else if (xc == -1 && yc == 8) // РµСЃР»Рё РЅР°Р¶Р°С‚Р° РєРЅРѕРїРєР° "РџРµСЂРµР·Р°РїСѓСЃРє"
                     {
                         resp = Response::REPLAY;
                     }
-                    else if (xc >= 0 && xc < 8 && yc >= 0 && yc < 8) // если была нажата клетка
+                    else if (xc >= 0 && xc < 8 && yc >= 0 && yc < 8) // РµСЃР»Рё Р±С‹Р»Р° РЅР°Р¶Р°С‚Р° РєР»РµС‚РєР°
                     {
                         resp = Response::CELL;
                     }
-                    else // иначе сброс координат клетки
+                    else // РёРЅР°С‡Рµ СЃР±СЂРѕСЃ РєРѕРѕСЂРґРёРЅР°С‚ РєР»РµС‚РєРё
                     {
                         xc = -1;
                         yc = -1;
                     }
                     break;
-                case SDL_WINDOWEVENT: // если событие связано с изменением размера экрана, то применяем новые настройки
+                case SDL_WINDOWEVENT: // РµСЃР»Рё СЃРѕР±С‹С‚РёРµ СЃРІСЏР·Р°РЅРѕ СЃ РёР·РјРµРЅРµРЅРёРµРј СЂР°Р·РјРµСЂР° СЌРєСЂР°РЅР°, С‚Рѕ РїСЂРёРјРµРЅСЏРµРј РЅРѕРІС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё
                     if (windowEvent.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
                     {
                         board->reset_window_size();
                         break;
                     }
                 }
-                if (resp != Response::OK) // если получили ответ, то выходим из цикла
+                if (resp != Response::OK) // РµСЃР»Рё РїРѕР»СѓС‡РёР»Рё РѕС‚РІРµС‚, С‚Рѕ РІС‹С…РѕРґРёРј РёР· С†РёРєР»Р°
                     break;
             }
         }
-        return {resp, xc, yc}; // возвращаем ответ
+        return { resp, xc, yc }; // РІРѕР·РІСЂР°С‰Р°РµРј РѕС‚РІРµС‚
     }
 
-    Response wait() const // ожидание ввода игрока после игры
+    Response wait() const // РѕР¶РёРґР°РЅРёРµ РІРІРѕРґР° РёРіСЂРѕРєР° РїРѕСЃР»Рµ РёРіСЂС‹
     {
         SDL_Event windowEvent;
         Response resp = Response::OK;
@@ -72,31 +72,31 @@ class Hand
         {
             if (SDL_PollEvent(&windowEvent))
             {
-                switch (windowEvent.type) // проверка типа введеного значения
+                switch (windowEvent.type) // РїСЂРѕРІРµСЂРєР° С‚РёРїР° РІРІРµРґРµРЅРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ
                 {
-                case SDL_QUIT: // если закрытие окна
+                case SDL_QUIT: // РµСЃР»Рё Р·Р°РєСЂС‹С‚РёРµ РѕРєРЅР°
                     resp = Response::QUIT;
                     break;
-                case SDL_WINDOWEVENT_SIZE_CHANGED: // если изменение размера окна
+                case SDL_WINDOWEVENT_SIZE_CHANGED: // РµСЃР»Рё РёР·РјРµРЅРµРЅРёРµ СЂР°Р·РјРµСЂР° РѕРєРЅР°
                     board->reset_window_size();
                     break;
-                case SDL_MOUSEBUTTONDOWN: { //если нажата кнопка мыши
-                    int x = windowEvent.motion.x; // определение координат, где нажала мышь
+                case SDL_MOUSEBUTTONDOWN: { //РµСЃР»Рё РЅР°Р¶Р°С‚Р° РєРЅРѕРїРєР° РјС‹С€Рё
+                    int x = windowEvent.motion.x; // РѕРїСЂРµРґРµР»РµРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚, РіРґРµ РЅР°Р¶Р°Р»Р° РјС‹С€СЊ
                     int y = windowEvent.motion.y;
-                    int xc = int(y / (board->H / 10) - 1); // определение координат клетки
+                    int xc = int(y / (board->H / 10) - 1); // РѕРїСЂРµРґРµР»РµРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚ РєР»РµС‚РєРё
                     int yc = int(x / (board->W / 10) - 1);
-                    if (xc == -1 && yc == 8) // если нажата кнопка "перезапуск"
+                    if (xc == -1 && yc == 8) // РµСЃР»Рё РЅР°Р¶Р°С‚Р° РєРЅРѕРїРєР° "РїРµСЂРµР·Р°РїСѓСЃРє"
                         resp = Response::REPLAY;
                 }
-                break;
+                                        break;
                 }
-                if (resp != Response::OK) // если получен ответ, выходим из цикла
+                if (resp != Response::OK) // РµСЃР»Рё РїРѕР»СѓС‡РµРЅ РѕС‚РІРµС‚, РІС‹С…РѕРґРёРј РёР· С†РёРєР»Р°
                     break;
             }
         }
         return resp;
     }
 
-  private:
-    Board *board; // указатель на объект игрового поля
+private:
+    Board* board; // СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РѕР±СЉРµРєС‚ РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ
 };

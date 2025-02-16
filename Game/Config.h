@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <fstream>
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
@@ -7,27 +7,27 @@ using json = nlohmann::json;
 
 class Config
 {
-  public:
+public:
     Config()
     {
         reload();
     }
 
-    // перезагрузка json объекта config
+    // РїРµСЂРµР·Р°РіСЂСѓР·РєР° json РѕР±СЉРµРєС‚Р° config
     void reload()
     {
-        // открывает файл settings.json и выгружает его содержимое в config, после чего закрывает файл
+        // РѕС‚РєСЂС‹РІР°РµС‚ С„Р°Р№Р» settings.json Рё РІС‹РіСЂСѓР¶Р°РµС‚ РµРіРѕ СЃРѕРґРµСЂР¶РёРјРѕРµ РІ config, РїРѕСЃР»Рµ С‡РµРіРѕ Р·Р°РєСЂС‹РІР°РµС‚ С„Р°Р№Р»
         std::ifstream fin(project_path + "settings.json");
         fin >> config;
         fin.close();
     }
 
-    // перегрузка оператора скобок позволяет более удобно извлекать данные из объекта config
-    auto operator()(const string &setting_dir, const string &setting_name) const
+    // РїРµСЂРµРіСЂСѓР·РєР° РѕРїРµСЂР°С‚РѕСЂР° СЃРєРѕР±РѕРє РїРѕР·РІРѕР»СЏРµС‚ Р±РѕР»РµРµ СѓРґРѕР±РЅРѕ РёР·РІР»РµРєР°С‚СЊ РґР°РЅРЅС‹Рµ РёР· РѕР±СЉРµРєС‚Р° config
+    auto operator()(const string& setting_dir, const string& setting_name) const
     {
         return config[setting_dir][setting_name];
     }
 
-  private:
+private:
     json config;
 };
